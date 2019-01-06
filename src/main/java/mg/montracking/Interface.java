@@ -1,14 +1,11 @@
 package mg.montracking;
 
 import java.util.Scanner;
-import java.util.concurrent.Callable;
 
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import com.pi4j.io.gpio.trigger.GpioCallbackTrigger;
 import com.pi4j.util.CommandArgumentParser;
-import com.pi4j.util.Console;
 
 public class Interface {
 
@@ -29,8 +26,8 @@ public class Interface {
                 PinPullResistance.PULL_DOWN);
         final GpioPinDigitalInput limitSwitchBackUp = gpio.provisionDigitalInputPin(RaspiPin.GPIO_10,
                 PinPullResistance.PULL_DOWN);
-        final GpioPinDigitalOutput motor1Left = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_12, "MyLED", PinState.LOW);
-        final GpioPinDigitalOutput motor1Right = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_13, "MyLED", PinState.LOW);
+        final GpioPinDigitalOutput motor1Right = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_12, "MyLED", PinState.LOW);
+        final GpioPinDigitalOutput motor1Left = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_13, "MyLED", PinState.LOW);
         final GpioPinDigitalOutput motor2Left = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_15, "MyLED", PinState.LOW);
         final GpioPinDigitalOutput motor2Right = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_16, "MyLED", PinState.LOW);
         
@@ -51,111 +48,25 @@ public class Interface {
         com.pi4j.wiringpi.Gpio.pwmSetRange(1000);
         com.pi4j.wiringpi.Gpio.pwmSetClock(500);
         
+        // Motors definition
+        final Motor motorDown = new Motor(motor1Right, motor1Left, pwm0);
+        final Motor motorUp = new Motor(motor2Right, motor2Left, pwm1);
      // Program
-        pwm1.setPwm(pwmValue);
-        System.out.println("PWM = " + pwm1.getPwm());
         limitSwitchFrontDown.addListener(new GpioPinListenerDigital() {
             public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-            	pwm1.setPwm(0);
-            	try {
-					Thread.sleep(1500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-            	motor1Left.high();
-            	motor1Right.high();
-            	System.out.println("switch nr 1 PWM = " + pwm1.getPwm());
+            	motorDown.stopHigh();
+            	System.out.println("switch nr 1 PWM0 = " + pwm0.getPwm());
             }
         });
         limitSwitchBackDown.addListener(new GpioPinListenerDigital() {
         	public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-                // display pin state on console
-        		pwm1.setPwm(0);
-            	try {
-					Thread.sleep(1500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-            	motor1Left.low();
-            	motor1Right.low();
-            	System.out.println("switch nr 2 PWM = " + pwm1.getPwm());
+        		motorDown.stopLow();
+            	System.out.println("switch nr 2 PWM0 = " + pwm0.getPwm());
             }
         });
-        limitSwitchBackUp.addListener(new GpioPinListenerDigital() {
-        	public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-                // display pin state on console
-        		pwm0.setPwm(0);
-            	try {
-					Thread.sleep(1500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-            	motor2Left.high();
-            	motor2Right.low();
-            	pwm0.setPwm(pwmValue);
-            	System.out.println("switch nr 3 PWM = " + pwm0.getPwm());
-            }
-        });
-        limitSwitchFrontUp.addListener(new GpioPinListenerDigital() {
-        	public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-                // display pin state on console
-        		pwm0.setPwm(0);
-            	try {
-					Thread.sleep(1500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-            	motor2Left.low();
-            	motor2Right.high();
-            	pwm0.setPwm(pwmValue);
-            	System.out.println("switch nr 4 PWM = " + pwm0.getPwm());
-            }
-        });
-        System.out.println("Program starts. Type anything in console to stop");
-        //while(!scanner.hasNext()){
-        while(true){
-        	if(motor1Left.isLow() && motor1Right.isLow()){
-        		searchForObj = false;
-        		motor1Left.low();
-        		motor1Right.high();
-        		pwm0.setPwm(pwmValue-400);
-        		Thread.sleep(3000);
-        		motor2Left.low();
-        		motor2Right.high();
-        		pwm1.setPwm(pwmValue-450);
-        		Thread.sleep(100);
-        		motor2Left.high();
-        		motor2Right.high();
-        		pwm1.setPwm(0);
-        	}
-        	if((motor1Left.isHigh() && motor1Right.isHigh()) || searchForObj){
-        		searchForObj = true;
-	        		motor1Left.high();
-	        		motor1Right.low();
-	        		pwm0.setPwm(pwmValue);
-	        		Thread.sleep(100);
-	        		motor1Left.high();
-	        		motor1Right.high();
-	        		pwm0.setPwm(0);
-	        		Thread.sleep(2000);
-        		
-        	}
-        	//Thread.sleep(200);
-        }
-      /*motor1Left.high();  // turn right
-		motor1Right.low();
-		motor1Left.low();  // turn left
-		motor1Right.high();
-		pwm0.setPwm(pwmValue);*/
-        /*pwm1.setPwm(0);
-        pwm0.setPwm(0);
-        gpio.shutdown();
-        System.out.print("Shutting down.");*/
         
+        motorDown.startSearching();
+       // TODO in other thread, if object found, call method motorDown.stopSearching() and start Tracker.track();
     }
 	
 }
