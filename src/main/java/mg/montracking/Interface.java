@@ -26,10 +26,10 @@ public class Interface {
                 PinPullResistance.PULL_DOWN);
         final GpioPinDigitalInput limitSwitchBackUp = gpio.provisionDigitalInputPin(RaspiPin.GPIO_10,
                 PinPullResistance.PULL_DOWN);
-        final GpioPinDigitalOutput motor1Right = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_12, "MyLED", PinState.LOW);
-        final GpioPinDigitalOutput motor1Left = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_13, "MyLED", PinState.LOW);
-        final GpioPinDigitalOutput motor2Left = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_15, "MyLED", PinState.LOW);
-        final GpioPinDigitalOutput motor2Right = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_16, "MyLED", PinState.LOW);
+        final GpioPinDigitalOutput motor1Left = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_12, "MyLED", PinState.LOW);
+        final GpioPinDigitalOutput motor1Right = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_13, "MyLED", PinState.LOW);
+        final GpioPinDigitalOutput motor2Right = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_15, "MyLED", PinState.LOW);
+        final GpioPinDigitalOutput motor2Left = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_16, "MyLED", PinState.LOW);
         
         // PWM pins deifnitions
         Pin pinPwm0 = CommandArgumentParser.getPin(
@@ -51,7 +51,9 @@ public class Interface {
         // Motors definition
         final Motor motorDown = new Motor(motor1Right, motor1Left, pwm0);
         final Motor motorUp = new Motor(motor2Right, motor2Left, pwm1);
-     // Program
+        
+        final Searcher searcher = new Searcher(motorDown, motorUp, 1000, 200);
+        // Program
         limitSwitchFrontDown.addListener(new GpioPinListenerDigital() {
             public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
             	motorDown.stopHigh();
@@ -64,8 +66,21 @@ public class Interface {
             	System.out.println("switch nr 2 PWM0 = " + pwm0.getPwm());
             }
         });
-        
-        motorDown.startSearching();
+        limitSwitchFrontUp.addListener(new GpioPinListenerDigital() {
+            public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
+            	motorUp.stopHigh();
+            	System.out.println("switch nr 3 PWM1 = " + pwm1.getPwm());
+            }
+        });
+        limitSwitchBackUp.addListener(new GpioPinListenerDigital() {
+        	public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
+        		motorUp.stopLow();
+            	System.out.println("switch nr 4 PWM1 = " + pwm1.getPwm());
+            }
+        });
+        System.out.println("Program starts.");
+        searcher.startSearching();
+ 
        // TODO in other thread, if object found, call method motorDown.stopSearching() and start Tracker.track();
     }
 	
