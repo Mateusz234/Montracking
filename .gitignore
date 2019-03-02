@@ -87,4 +87,6 @@ buildNumber.properties
 
 ### Personal files ###
 *.txt
+jar-in-jar-loader.zip
+remotedebug.xml
 
