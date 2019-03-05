@@ -4,7 +4,8 @@ import mg.montracking.Utils.ISearcher;
 
 /**
  * Provide methods to move motors in different manners, continuous, pulse etc to look choosen object
- * One searcher object is made of two {@link Motor}s
+ * One searcher object is made of one {@link Motor} which is bottom one. Upper motor is managed by listeners in 
+ * {@link mg.montracking.controllers.SearcherTrackerController} and {@link Tracker}.
  * 
  * @author Mateusz Goluchowski
  * @version 1.0 (2019-02-25)

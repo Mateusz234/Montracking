@@ -5,7 +5,8 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.GpioPinPwmOutput;
 
 /**
- * Combines {@link Gpio} pins from raspberry PI into Motor object.  
+ * Combines {@link GpioPinPwmOutput} and {@link GpioPinDigitalOutput} objects which are
+ * managing pins in raspberry PI into Motor object.  
  * 
  * @author Mateusz Goluchowski
  * @version 1.0 (2019-02-25)
@@ -16,8 +17,6 @@ public class Motor {
 	private GpioPinDigitalOutput motorMoveRight;
 	private GpioPinDigitalOutput motorMoveLeft;
 	private GpioPinPwmOutput pwm;
-	
-	private boolean makeStep;
 	
 	public Motor(GpioPinDigitalOutput motorMoveRight, GpioPinDigitalOutput motorMoveLeft, GpioPinPwmOutput pwm){
 	this.motorMoveRight = motorMoveRight;
@@ -104,13 +103,5 @@ public class Motor {
 		pwm.setPwm(pwmValue);
 		Thread.sleep(ms);
 		pwm.setPwm(0);
-	}
-
-	public boolean isMakeStep() {
-		return makeStep;
-	}
-
-	public void setMakeStep(boolean makeStep) {
-		this.makeStep = makeStep;
 	}
 }

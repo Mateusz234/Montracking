@@ -7,7 +7,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import mg.montracking.controllers.VideoCaptureController;
+import mg.montracking.controllers.ImageProcessingController;
+import mg.montracking.controllers.ScreenController;
+import mg.montracking.controllers.SearcherTrackerController;
 
 import org.opencv.core.Core;
 
@@ -19,26 +21,36 @@ import org.opencv.core.Core;
  * 
  */
 
-public class Interface extends Application{
-
+public class Interface extends Application {
 	@Override
 	public void start(Stage primaryStage)
 	{
 		try
-		{
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/view/MainMenu.fxml"));
-			BorderPane rootElement = (BorderPane) loader.load();
-			Scene scene = new Scene(rootElement, 800, 600);
+		{	// Loading components and controllers from fxml files
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/view/ImageProcessing.fxml"));
+			BorderPane imageProcessingPane = (BorderPane) loader.load();
+			ImageProcessingController ipController = loader.getController();
+			loader = new FXMLLoader(getClass().getResource("/resources/view/SearcherTracker.fxml"));
+			BorderPane searcherTrackergPane = (BorderPane) loader.load();
+			SearcherTrackerController stController = loader.getController();
+			
+			Scene scene = new Scene(imageProcessingPane, 800, 600);
 			primaryStage.setTitle("Montracking - Main menu");
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			VideoCaptureController vcController = loader.getController();
-			vcController.initGpio();
+			
+			ScreenController sController = ScreenController.getInstance();
+			sController.init(scene);
+			sController.addScreen("SearcherTracker", searcherTrackergPane);
+			sController.addScreen("ImageProcessing", imageProcessingPane);
+			
+			
+			stController.initGpio();
 			primaryStage.setOnCloseRequest((new EventHandler<WindowEvent>() {
 				public void handle(WindowEvent we)
 				{
-					vcController.setClosed();
-					vcController.stopSearcher();
+					ipController.setClosed();
+					stController.stopSearcher();
 				}
 			}));
 		}
