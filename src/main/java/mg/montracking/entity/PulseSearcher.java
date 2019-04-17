@@ -1,18 +1,18 @@
-package mg.montracking.service;
+package mg.montracking.entity;
 
 import javax.swing.Timer;
 
 /**
  * Provides method to move motor with short pulses on the contrary to continuous movement.
  * One searcher object is made of one {@link Motor} which is bottom one. Upper motor is managed by listeners in 
- * {@link mg.montracking.controllers.SearcherTrackerController} and {@link Tracker}.
+ * {@link mg.montracking.controllers.SearcherController} and {@link Tracker}.
  * 
  * @author Mateusz Goluchowski
  * @version 1.0 (2019-02-25)
  * 
  */
 
-public class PulseSearcher extends Searcher{
+public class PulseSearcher extends BaseSearcher{
 	
 	private final Motor bottomMotor;
 	static Timer timer;
@@ -35,7 +35,7 @@ public class PulseSearcher extends Searcher{
 	public void start(int pwm) {
 		if(!timer.isRunning()) timer.start();
 		if(toggleMotorMove) bottomMotor.move(pwm);
-		else bottomMotor.stopPwm();
+		else bottomMotor.stop();
 		
 	}
 }

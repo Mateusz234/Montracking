@@ -1,28 +1,35 @@
-package mg.montracking.service;
+package mg.montracking.entity;
 
-import mg.montracking.Utils.ISearcher;
+import mg.montracking.core.interfaces.Searcher;
 
 /**
  * Provide methods to move motors in different manners, continuous, pulse etc to look choosen object
  * One searcher object is made of one {@link Motor} which is bottom one. Upper motor is managed by listeners in 
- * {@link mg.montracking.controllers.SearcherTrackerController} and {@link Tracker}.
+ * {@link mg.montracking.controllers.SearcherController} and {@link Tracker}.
  * 
  * @author Mateusz Goluchowski
  * @version 1.0 (2019-02-25)
  * 
  */
 
-public class Searcher implements ISearcher {
+public class BaseSearcher implements Searcher {
 	
 	private final Motor bottomMotor, upperMotor;
-	
 	
 	/**
 	 * Constructor
 	 */
-	public Searcher (Motor bottomMotor, Motor upperMotor){
+	public BaseSearcher (Motor bottomMotor, Motor upperMotor){
 		this.bottomMotor = bottomMotor;
 		this.upperMotor  = upperMotor;
+	}
+	
+	public Motor getBottomMotor() {
+		return bottomMotor;
+	}
+
+	public Motor getUpperMotor() {
+		return upperMotor;
 	}
 	
 	/**
@@ -44,8 +51,8 @@ public class Searcher implements ISearcher {
 	
 	@Override
 	public void stop() {
-		bottomMotor.stopPwm();
-    	upperMotor.stopPwm();
+		bottomMotor.stop();
+    	upperMotor.stop();
 	}
 
 }

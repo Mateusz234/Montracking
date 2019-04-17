@@ -1,4 +1,4 @@
-package mg.montracking.service;
+package mg.montracking.core;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import mg.montracking.controllers.ImageProcessingController;
 import mg.montracking.controllers.ScreenController;
-import mg.montracking.controllers.SearcherTrackerController;
+import mg.montracking.controllers.SearcherController;
 
 import org.opencv.core.Core;
 
@@ -21,7 +21,7 @@ import org.opencv.core.Core;
  * 
  */
 
-public class Interface extends Application {
+public class MainInterface extends Application {
 	@Override
 	public void start(Stage primaryStage)
 	{
@@ -32,7 +32,7 @@ public class Interface extends Application {
 			ImageProcessingController ipController = loader.getController();
 			loader = new FXMLLoader(getClass().getResource("/resources/view/SearcherTracker.fxml"));
 			BorderPane searcherTrackergPane = (BorderPane) loader.load();
-			SearcherTrackerController stController = loader.getController();
+			SearcherController stController = loader.getController();
 			
 			Scene scene = new Scene(imageProcessingPane, 800, 600);
 			primaryStage.setTitle("Montracking - Main menu");
@@ -46,6 +46,7 @@ public class Interface extends Application {
 			
 			
 			stController.initGpio();
+			ipController.init();
 			primaryStage.setOnCloseRequest((new EventHandler<WindowEvent>() {
 				public void handle(WindowEvent we)
 				{
@@ -63,7 +64,9 @@ public class Interface extends Application {
 	public static void main(String[] args){
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         launch(args);
-
+        
+       
+        
     }
 	
 }

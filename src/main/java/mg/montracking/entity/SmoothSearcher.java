@@ -1,16 +1,16 @@
-package mg.montracking.service;
+package mg.montracking.entity;
 
 /**
  * Provides method to move motor continuously.
  * One searcher object is made of one {@link Motor} which is bottom one. Upper motor is managed by listeners in 
- * {@link SearcherTrackerController} and {@link Tracker}.
+ * {@link SearcherController} and {@link Tracker}.
  * 
  * @author Mateusz Goluchowski
  * @version 1.0 (2019-02-25)
  * 
  */
 
-public class SmoothSearcher extends Searcher{
+public class SmoothSearcher extends BaseSearcher{
 		
 	private final Motor bottomMotor;
 	

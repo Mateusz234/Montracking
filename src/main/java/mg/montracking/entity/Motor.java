@@ -1,4 +1,10 @@
-package mg.montracking.service;
+package mg.montracking.entity;
+
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 
@@ -12,10 +18,18 @@ import com.pi4j.io.gpio.GpioPinPwmOutput;
  * @version 1.0 (2019-02-25)
  * 
  */
+
+@Entity
 public class Motor {
 	
+	@Id
+	@GeneratedValue
+	private long id;
+	@Column(name="motor direction - right")
 	private GpioPinDigitalOutput motorMoveRight;
+	@Column(name="motor direction - left")
 	private GpioPinDigitalOutput motorMoveLeft;
+	@Column(name="motor speed")
 	private GpioPinPwmOutput pwm;
 	
 	public Motor(GpioPinDigitalOutput motorMoveRight, GpioPinDigitalOutput motorMoveLeft, GpioPinPwmOutput pwm){
@@ -32,28 +46,11 @@ public class Motor {
 		setMotorConfigToTurnRight();
 		pwm.setPwm(0);
 	}
-	
-	public void stopHigh(){
-		motorMoveRight.high();
-		motorMoveLeft.high();
+
+	public void stop(){
 		pwm.setPwm(0);
 	}
-	public void stopLow(){
-		motorMoveRight.low();
-		motorMoveLeft.low();
-		pwm.setPwm(0);
-	}
-	public void stopPwm(){
-		pwm.setPwm(0);
-	}
-	public Boolean isStoppedLow(){
-		if(motorMoveRight.isLow() && motorMoveLeft.isLow()) return true;
-		else return false;
-	}
-	public Boolean isStoppedHigh(){
-		if(motorMoveRight.isHigh() && motorMoveLeft.isHigh()) return true;
-		else return false;
-	}
+
 	public Boolean isLeft(){
 		if(motorMoveRight.isLow() && motorMoveLeft.isHigh()) return true;
 		else return false;

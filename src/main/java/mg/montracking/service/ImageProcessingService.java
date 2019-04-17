@@ -1,4 +1,4 @@
-package mg.montracking.Utils;
+package mg.montracking.service;
 
 
 import java.awt.image.BufferedImage;
@@ -21,7 +21,7 @@ import javafx.scene.image.Image;
  * @since 1.0
  * 
  */
-public final class Utils
+public final class ImageProcessingService
 {
 	/**
 	 * Convert a Mat object (OpenCV) in the corresponding Image for JavaFX

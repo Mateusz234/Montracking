@@ -85,6 +85,9 @@ buildNumber.properties
 
 # End of https://www.gitignore.io/api/maven,eclipse
 
+### Hibernate ###
+persistence.xml
+
 ### Personal files ###
 *.txt
 jar-in-jar-loader.zip
