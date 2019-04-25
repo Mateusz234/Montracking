@@ -1,6 +1,5 @@
 package mg.montracking.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
@@ -20,6 +19,17 @@ import javafx.scene.control.Label;
  */
 public class SearcherController {
 
+	private SearcherController() {
+	}
+
+	public static SearcherController getInstance() {
+		return SearcherControllerHolder.INSTANCE;
+	}
+
+	private static class SearcherControllerHolder {
+		private static final SearcherController INSTANCE = new SearcherController();
+	}
+	
 	@FXML
 	private Button startSearcherButton, imageProcessingViewButton, searcherTrackerViewButton;
 	@FXML
@@ -27,14 +37,14 @@ public class SearcherController {
 	@FXML
 	private Label labelBottomMotorPwm, labelUpperMotorPwm;
 
-	SearcherService searcherService = SearcherService.getInstance();
-	ScreenController screenController = ScreenController.getInstance();
+	private SearcherService searcherService = SearcherService.getInstance();
+	private ScreenController screenController = ScreenController.getInstance();
 
 	private boolean searcherActive = false;
 	private int bottomMotorPWM, upperMotorPWM;
 
 	@FXML
-	protected void startSearcher(ActionEvent event) {
+	public void startSearcher() {
 		if (!searcherActive) {
 			searcherActive = true;
 			startSearcherButton.setText("Stop searcher");
@@ -68,13 +78,20 @@ public class SearcherController {
 
 	@FXML
 	public void showViewImageProcessing() {
-		System.out.println("show view image processing");
 		screenController.activate("ImageProcessing");
 	}
 
 	@FXML
 	public void showViewSearcherTracker() {
-		System.out.println("show view  searcher tracker");
 		screenController.activate("SearcherTracker");
+	}
+	
+	@FXML
+	public void showViewOverseer() {
+		screenController.activate("Overseer");
+	}
+
+	public void initGpio() {
+		searcherService.initGpio();
 	}
 }

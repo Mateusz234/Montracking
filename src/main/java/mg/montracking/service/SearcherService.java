@@ -28,7 +28,7 @@ public class SearcherService {
 	private int bottomMotorPWM = 500, upperMotorPWM = 400;
 
 	MotorRepository motorRepository = MotorRepository.getInstance();
-	
+
 	GpioController gpioInstance;
 	Pin bottomMotorPwmPin, upperMotorPwmPin;
 	GpioPinPwmOutput bottomMotorPwm, upperMotorPwm;
@@ -55,6 +55,8 @@ public class SearcherService {
 	 * {@link BaseSearcher} objects.
 	 */
 	public void initGpio() {
+
+		System.out.println("initing gpio");
 
 		gpioInstance = GpioFactory.getInstance();
 		bottomLimitSwitchFront = gpioInstance.provisionDigitalInputPin(RaspiPin.GPIO_04, PinPullResistance.PULL_DOWN);
@@ -88,8 +90,8 @@ public class SearcherService {
 		searcher = new SmoothSearcher(bottomMotor, upperMotor);
 		// searcher = new PulseSearcher(bottomMotor, upperMotor);
 
-		rSearcher = () -> searcher.getBottomMotor().move(bottomMotorPWM);
-		
+		rSearcher = () -> searcher.start(bottomMotorPWM);
+
 		// PWM configuration
 		com.pi4j.wiringpi.Gpio.pwmSetMode(com.pi4j.wiringpi.Gpio.PWM_MODE_MS);
 		com.pi4j.wiringpi.Gpio.pwmSetRange(1000);
@@ -143,18 +145,23 @@ public class SearcherService {
 	}
 
 	public void startSearcher() {
-		this.motorMovementScheduler = Executors.newSingleThreadScheduledExecutor();
-		this.motorMovementScheduler.scheduleAtFixedRate(rSearcher, 0, 20, TimeUnit.MILLISECONDS);
+		if (!searcher.isRunning()) {
+			System.out.println("Starting searcher task");
+			this.motorMovementScheduler = Executors.newSingleThreadScheduledExecutor();
+			this.motorMovementScheduler.scheduleAtFixedRate(rSearcher, 0, 20, TimeUnit.MILLISECONDS);
+		}
 	}
 
 	public void stopSearcher() {
-		searcher.stop();
-		try {
-			// stop the timer
-			this.motorMovementScheduler.shutdown();
-			this.motorMovementScheduler.awaitTermination(20, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
-			System.err.println("Exception in stopping the searcher... " + e);
+		if (searcher.isRunning()) {
+			System.out.println("Stoping searcher task");
+			searcher.stop();
+			try {
+				this.motorMovementScheduler.shutdown();
+				this.motorMovementScheduler.awaitTermination(20, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				System.err.println("Exception in stopping the searcher... " + e);
+			}
 		}
 	}
 

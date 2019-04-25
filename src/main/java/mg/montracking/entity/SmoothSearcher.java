@@ -21,6 +21,7 @@ public class SmoothSearcher extends BaseSearcher{
 	
 	@Override
 	public void start(int pwm) {
+		super.start(pwm);
 		bottomMotor.move(pwm);
 	}
 	

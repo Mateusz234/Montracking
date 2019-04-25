@@ -15,10 +15,8 @@ import mg.montracking.core.interfaces.Searcher;
 public class BaseSearcher implements Searcher {
 	
 	private final Motor bottomMotor, upperMotor;
-	
-	/**
-	 * Constructor
-	 */
+	public boolean isRunning;
+
 	public BaseSearcher (Motor bottomMotor, Motor upperMotor){
 		this.bottomMotor = bottomMotor;
 		this.upperMotor  = upperMotor;
@@ -30,6 +28,14 @@ public class BaseSearcher implements Searcher {
 
 	public Motor getUpperMotor() {
 		return upperMotor;
+	}
+	
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	public void setRunning(boolean isRunning) {
+		this.isRunning = isRunning;
 	}
 	
 	/**
@@ -50,7 +56,13 @@ public class BaseSearcher implements Searcher {
 	}
 	
 	@Override
+	public void start(int pwm) {
+		setRunning(true);
+	}
+	
+	@Override
 	public void stop() {
+		setRunning(false);
 		bottomMotor.stop();
     	upperMotor.stop();
 	}

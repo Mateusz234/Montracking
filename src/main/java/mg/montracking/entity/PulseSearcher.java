@@ -33,6 +33,7 @@ public class PulseSearcher extends BaseSearcher{
 
 	@Override
 	public void start(int pwm) {
+		super.start(pwm);
 		if(!timer.isRunning()) timer.start();
 		if(toggleMotorMove) bottomMotor.move(pwm);
 		else bottomMotor.stop();

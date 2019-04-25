@@ -21,6 +21,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import mg.montracking.entity.Overseer;
+import mg.montracking.entity.Person;
 
 /**
  * Service for image processing that handles controller methods.
@@ -32,6 +34,10 @@ public final class ImageProcessingService {
 	private CascadeClassifier faceCascade;
 	private int absoluteFaceSize;
 	private Runnable frameGrabber;
+	private boolean isRunning = false;
+
+	private Person person = Person.getInstance();
+	private Overseer overseer = Overseer.getInstance();
 
 	private ImageProcessingService() {
 	}
@@ -45,6 +51,7 @@ public final class ImageProcessingService {
 	}
 
 	public void init() {
+		System.out.println("initing image");
 		String path = "/home/pi/opencv-3.3.0/data/lbpcascades/lbpcascade_frontalface.xml";
 		this.faceCascade = new CascadeClassifier(path);
 		absoluteFaceSize = 0;
@@ -55,18 +62,24 @@ public final class ImageProcessingService {
 	 *
 	 * @param event the push button event
 	 */
-	public void startCamera(VideoCapture capture, ImageView currentFrame) {
-		this.capture = capture;
-		frameGrabber = () -> updateImageView(currentFrame, ImageProcessingService.mat2Image(grabFrame()));
-		this.frameGrabberTimer = Executors.newSingleThreadScheduledExecutor();
-		this.frameGrabberTimer.scheduleAtFixedRate(frameGrabber, 0, 40, TimeUnit.MILLISECONDS);
+	public void startImageProcessing(VideoCapture capture, ImageView currentFrame) {
+		if (!this.isRunning) {
+			System.out.println("Starting image processing");
+			this.isRunning = true;
+			this.capture = capture;
+			frameGrabber = () -> updateImageView(currentFrame, ImageProcessingService.mat2Image(grabFrame()));
+			this.frameGrabberTimer = Executors.newSingleThreadScheduledExecutor();
+			this.frameGrabberTimer.scheduleAtFixedRate(frameGrabber, 0, 40, TimeUnit.MILLISECONDS);
+		}
 	}
 
-	public void stopCamera() {
+	public void stopImageProcessing() {
 		if (this.frameGrabberTimer != null && !this.frameGrabberTimer.isShutdown()) {
 			try {
 				this.frameGrabberTimer.shutdown();
-				this.frameGrabberTimer.awaitTermination(10, TimeUnit.MILLISECONDS);
+				this.frameGrabberTimer.awaitTermination(40, TimeUnit.MILLISECONDS);
+				this.isRunning = false;
+				System.out.println("Stopping image processing");
 			} catch (InterruptedException e) {
 				System.err.println("Exception in stopping the frame capture, trying to release the camera now... " + e);
 			}
@@ -116,10 +129,15 @@ public final class ImageProcessingService {
 		this.faceCascade.detectMultiScale(grayFrame, faces, 1.1, 2, 0 | Objdetect.CASCADE_SCALE_IMAGE,
 				new Size(this.absoluteFaceSize, this.absoluteFaceSize), new Size());
 		Rect[] facesArray = faces.toArray();
+		// check if array is not empty, stop searcher if is started and start tracker
+		// call tracker controller method start with coordinates as parameters.
 		if (facesArray.length != 0) {
+			overseer.setPersonFound(true);
+			person.setFaceCoordinates(facesArray[0]);
 			for (int i = 0; i < facesArray.length; i++)
 				Imgproc.rectangle(frame, facesArray[i].tl(), facesArray[i].br(), new Scalar(0, 255, 0), 2);
-		}
+		} else
+			overseer.setPersonFound(false);
 	}
 
 	/**
