@@ -11,29 +11,22 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane minHeight="600.0" minWidth="800.0"
-	xmlns="http://javafx.com/javafx/8.0.171"
-	xmlns:fx="http://javafx.com/fxml/1"> <!-- fx:controller="mg.montracking.controllers.ImageProcessingController"> -->
+<BorderPane minHeight="600.0" minWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"> <!-- fx:controller="mg.montracking.controllers.ImageProcessingController"> -->
 	<bottom>
 		<HBox alignment="center">
 			<padding>
 				<Insets bottom="25" left="25" right="25" top="25" />
 			</padding>
-			<Button fx:id="startCameraButton" alignment="center"
-				onAction="#toggleImageProcessing" text="Start Camera" />
+			<Button fx:id="startCameraButton" alignment="center" onAction="#toggleImageProcessing" text="Start Camera" />
 		</HBox>
 	</bottom>
 	<top>
-		<SplitPane dividerPositions="0.5"
-			BorderPane.alignment="CENTER">
+		<SplitPane dividerPositions="0.5" BorderPane.alignment="CENTER">
 			<items>
-				<ImageView fx:id="currentFrame" fitHeight="412.5"
-					fitWidth="550.0" />
-				<SplitPane dividerPositions="0.5, 0.5"
-					orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+				<ImageView fx:id="currentFrame" fitHeight="412.5" fitWidth="550.0" />
+				<SplitPane dividerPositions="0.5, 0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
 					<items>
-						<VBox alignment="TOP_CENTER" maxWidth="250.0"
-							prefHeight="480.0" prefWidth="153.0">
+						<VBox alignment="TOP_CENTER" maxWidth="250.0" prefHeight="480.0" prefWidth="153.0">
 							<children>
 								<Label text="Image processing">
 									<font>
@@ -42,40 +35,71 @@
 								</Label>
 							</children>
 						</VBox>
-						<VBox alignment="TOP_CENTER" maxWidth="250.0"
-							prefHeight="480.0" prefWidth="153.0">
+						<VBox alignment="TOP_CENTER" maxWidth="250.0" prefHeight="480.0" prefWidth="153.0">
 							<children>
 								<Label text="Switch views">
 									<font>
 										<Font name="System Bold" size="24.0" />
 									</font>
 								</Label>
-								<Button fx:id="OverseerViewButton" maxWidth="250.0"
-									mnemonicParsing="false" onAction="#showViewOverseer"
-									prefHeight="30.0" prefWidth="150.0" text="Overseer"
-									wrapText="true" />
-								<Button fx:id="imageProcessingViewButton"
-									maxWidth="250.0" mnemonicParsing="false"
-									onAction="#showViewImageProcessing" prefHeight="30.0"
-									prefWidth="150.0" text="Image processing"
-									textAlignment="CENTER" wrapText="true" />
-								<Button fx:id="searcherTrackerViewButton"
-									maxWidth="250.0" mnemonicParsing="false"
-									onAction="#showViewSearcherTracker" prefHeight="30.0"
-									prefWidth="150.0" text="Searcher" wrapText="true" />
+								<Button fx:id="OverseerViewButton" maxWidth="250.0" mnemonicParsing="false" onAction="#showViewOverseer" prefHeight="30.0" prefWidth="150.0" text="Overseer" wrapText="true" />
+								<Button fx:id="imageProcessingViewButton" maxWidth="250.0" mnemonicParsing="false" onAction="#showViewImageProcessing" prefHeight="30.0" prefWidth="150.0" text="Image processing" textAlignment="CENTER" wrapText="true" />
+								<Button fx:id="searcherTrackerViewButton" maxWidth="250.0" mnemonicParsing="false" onAction="#showViewSearcherTracker" prefHeight="30.0" prefWidth="150.0" text="Searcher" wrapText="true" />
 							</children>
 						</VBox>
-						<VBox alignment="TOP_CENTER" maxWidth="250.0"
-							prefHeight="480.0" prefWidth="153.0">
+						<VBox alignment="TOP_CENTER" maxWidth="250.0" prefHeight="480.0" prefWidth="153.0">
 							<children>
-								<Label text="Parameters">
+								<Label text="Face extracting">
 									<font>
 										<Font name="System Bold" size="24.0" />
 									</font>
 								</Label>
-								<TextField text="Parameter 1" />
-								<TextField text="Parameter 2" />
-								<TextField text="Parameter 3" />
+                        <HBox prefHeight="30.0" prefWidth="200.0">
+                           <children>
+                              <Label alignment="CENTER" contentDisplay="CENTER" text="Name" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="17.0" />
+                                 </font>
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                                 <HBox.margin>
+                                    <Insets left="5.0" top="2.0" />
+                                 </HBox.margin>
+                              </Label>
+      								<TextField fx:id="nameTextField" />
+                           </children>
+                        </HBox>
+                        <Button fx:id="extractAndSaveButton" mnemonicParsing="false" onAction="#extractAndSaveFace" text="Extract &amp; save face" />
+                        <HBox prefHeight="45.0" prefWidth="200.0">
+                           <children>
+                              <Label alignment="CENTER" contentDisplay="CENTER" text="Info:" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="17.0" />
+                                 </font>
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                                 <HBox.margin>
+                                    <Insets left="5.0" top="2.0" />
+                                 </HBox.margin>
+                                 <padding>
+                                    <Insets top="10.0" />
+                                 </padding>
+                              </Label>
+                              <Label fx:id="infoLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" minHeight="2.0" minWidth="2.0" prefHeight="120.0" prefWidth="180.0" textAlignment="CENTER" wrapText="true">
+                                 <font>
+                                    <Font name="System Regular" size="12.0" />
+                                 </font>
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                                 <HBox.margin>
+                                    <Insets left="5.0" top="2.0" />
+                                 </HBox.margin>
+                              </Label>
+                           </children>
+                        </HBox>
 							</children>
 						</VBox>
 					</items>

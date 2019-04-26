@@ -4,6 +4,8 @@ import org.opencv.videoio.VideoCapture;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import mg.montracking.service.ImageProcessingService;
 
@@ -29,13 +31,18 @@ public class ImageProcessingController {
 	}
 
 	@FXML
-	private Button startCameraButton, imageProcessingViewButton, searcherTrackerViewButton;
+	private Button startCameraButton, imageProcessingViewButton, searcherTrackerViewButton, extractAndSaveButton;
 	@FXML
 	private ImageView currentFrame;
+	@FXML
+	private TextField nameTextField;
+	@FXML
+	private Label infoLabel;
 
 	private ScreenController screenController = ScreenController.getInstance();
 	private ImageProcessingService imageProcessingService = ImageProcessingService.getInstance();
 
+	private String personName;
 	private VideoCapture capture = new VideoCapture();
 	private boolean cameraActive = false;
 	private static int cameraId = 0;
@@ -85,6 +92,17 @@ public class ImageProcessingController {
 			this.cameraActive = false;
 			this.startCameraButton.setText("Start Camera");
 			imageProcessingService.stopImageProcessing();
+		}
+	}
+
+	@FXML
+	public void extractAndSaveFace() {
+		personName = nameTextField.getText();
+		if (personName.isEmpty())
+			infoLabel.setText("Please insert name first!");
+		else {
+			if (imageProcessingService.extractAndSaveFace(personName, infoLabel))
+				infoLabel.setText("Extracting completed succesfully. Name: " + personName);
 		}
 	}
 

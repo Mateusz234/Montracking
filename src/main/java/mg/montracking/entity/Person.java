@@ -10,17 +10,15 @@ import org.opencv.core.Rect;
  */
 public class Person {
 
+	String name;
 	Rect faceCoordinates;
-	
-	private Person() {
+
+	public String getName() {
+		return name;
 	}
 
-	public static Person getInstance() {
-		return PersonHolder.INSTANCE;
-	}
-
-	private static class PersonHolder {
-		private static final Person INSTANCE = new Person();
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Rect getFaceCoordinates() {
@@ -30,5 +28,5 @@ public class Person {
 	public void setFaceCoordinates(Rect faceCoordinates) {
 		this.faceCoordinates = faceCoordinates;
 	}
-	
+
 }
