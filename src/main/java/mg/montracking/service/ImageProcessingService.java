@@ -19,8 +19,10 @@ import org.opencv.videoio.VideoCapture;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import mg.montracking.core.utils.FaceExtractor;
 import mg.montracking.entity.Overseer;
 import mg.montracking.entity.Person;
 
@@ -36,7 +38,7 @@ public final class ImageProcessingService {
 	private Runnable frameGrabber;
 	private boolean isRunning = false;
 
-	private Person person = Person.getInstance();
+	private Person person = new Person();
 	private Overseer overseer = Overseer.getInstance();
 
 	private ImageProcessingService() {
@@ -199,5 +201,14 @@ public final class ImageProcessingService {
 		System.arraycopy(sourcePixels, 0, targetPixels, 0, sourcePixels.length);
 
 		return image;
+	}
+
+	public boolean extractAndSaveFace(String personName, Label infoLabel) {
+		person.setName(personName);
+		if (overseer.isPersonFound()) {
+			FaceExtractor.extractFaceFromImage(person, grabFrame(), infoLabel);
+		} else
+			infoLabel.setText("No face found!");
+		return false;
 	}
 }
