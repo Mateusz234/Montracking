@@ -25,7 +25,7 @@ public class PulseSearcher extends BaseSearcher{
 	public PulseSearcher (Motor bottomMotor, Motor upperMotor){
 		super(bottomMotor,upperMotor);
 		this.bottomMotor = bottomMotor;
-		timer = new Timer(1000, (event) -> {
+		timer = new Timer(500, (event) -> {
 			if(!toggleMotorMove) toggleMotorMove = true;
 			else toggleMotorMove = false;
 		});

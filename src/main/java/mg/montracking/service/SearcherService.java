@@ -19,15 +19,18 @@ import com.pi4j.util.CommandArgumentParser;
 
 import mg.montracking.entity.BaseSearcher;
 import mg.montracking.entity.Motor;
+import mg.montracking.entity.MotorProvider;
+import mg.montracking.entity.PulseSearcher;
 import mg.montracking.entity.SmoothSearcher;
 import mg.montracking.repository.MotorRepository;
 
 public class SearcherService {
 
 	private ScheduledExecutorService motorMovementScheduler;
-	private int bottomMotorPWM = 500, upperMotorPWM = 400;
+	private int bottomMotorPWM = 250, upperMotorPWM = 400;
 
 	MotorRepository motorRepository = MotorRepository.getInstance();
+	MotorProvider motorProvider = MotorProvider.getInstance();
 
 	GpioController gpioInstance;
 	Pin bottomMotorPwmPin, upperMotorPwmPin;
@@ -56,7 +59,7 @@ public class SearcherService {
 	 */
 	public void initGpio() {
 
-		System.out.println("initing gpio");
+		System.out.println("Initializaing Searcher and Gpio...");
 
 		gpioInstance = GpioFactory.getInstance();
 		bottomLimitSwitchFront = gpioInstance.provisionDigitalInputPin(RaspiPin.GPIO_04, PinPullResistance.PULL_DOWN);
@@ -87,8 +90,11 @@ public class SearcherService {
 		bottomMotor = new Motor(bottomMotorLeftDirPin, bottomMotorRightDirPin, bottomMotorPwm);
 		upperMotor = new Motor(upperMotorLeftDirPin, upperMotorRightDirPin, upperMotorPwm);
 
-		searcher = new SmoothSearcher(bottomMotor, upperMotor);
-		// searcher = new PulseSearcher(bottomMotor, upperMotor);
+		motorProvider.setBottomMotor(bottomMotor);
+		motorProvider.setUpperMotor(upperMotor);
+		
+//		searcher = new SmoothSearcher(motorProvider.getBottomMotor(), motorProvider.getUpperMotor());
+		searcher = new PulseSearcher(motorProvider.getBottomMotor(), motorProvider.getUpperMotor());
 
 		rSearcher = () -> searcher.start(bottomMotorPWM);
 
@@ -142,9 +148,12 @@ public class SearcherService {
 				}
 			}
 		});
+		System.out.println("Searcher and Gpio initialization done.");
 	}
 
 	public void startSearcher() {
+		bottomMotorPWM = 450;
+		upperMotorPWM = 400;
 		if (!searcher.isRunning()) {
 			System.out.println("Starting searcher task");
 			this.motorMovementScheduler = Executors.newSingleThreadScheduledExecutor();

@@ -1,6 +1,7 @@
 package mg.montracking.core.utils;
 
 import org.opencv.core.Mat;
+import org.opencv.core.Rect;
 import org.opencv.imgcodecs.Imgcodecs;
 
 import javafx.scene.control.Label;
@@ -26,6 +27,16 @@ public class FaceExtractor {
 		Mat faceImage = frame.submat(person.getFaceCoordinates());
 		String fileName = person.getName() + "Face.jpg";
 		boolean isFileSavedProperly = Imgcodecs.imwrite(fileName, faceImage);
+		if (isFileSavedProperly)
+			infoLabel.setText("Face saved to fifle succesfully!");
+		else
+			infoLabel.setText("Cannot save face to a file.");
+	}
+	
+	public static void screenShot(String frameName, Mat frame, Label infoLabel) {
+		String fileName = "Pictures/" + frameName + ".jpg";
+		Mat fImage = frame.submat(new Rect(80,0,480,480));
+		boolean isFileSavedProperly = Imgcodecs.imwrite(fileName, fImage);
 		if (isFileSavedProperly)
 			infoLabel.setText("Face saved to fifle succesfully!");
 		else

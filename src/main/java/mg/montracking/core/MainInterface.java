@@ -11,6 +11,7 @@ import mg.montracking.controllers.ImageProcessingController;
 import mg.montracking.controllers.OverseerController;
 import mg.montracking.controllers.ScreenController;
 import mg.montracking.controllers.SearcherController;
+import mg.montracking.controllers.TrackerController;
 
 import org.opencv.core.Core;
 
@@ -27,6 +28,7 @@ public class MainInterface extends Application {
 	OverseerController overseerController = OverseerController.getInstance();
 	ImageProcessingController imageProcessingController = ImageProcessingController.getInstance();
 	SearcherController searcherController = SearcherController.getInstance();
+	TrackerController trackerController = TrackerController.getInstance();
 	
 	FXMLLoader loader = null;
 	
@@ -58,12 +60,14 @@ public class MainInterface extends Application {
 			
 			searcherController.initGpio();
 			imageProcessingController.init();
+			trackerController.init();
 			
 			primaryStage.setOnCloseRequest((new EventHandler<WindowEvent>() {
 				public void handle(WindowEvent we)
 				{
 					imageProcessingController.stopImageProcessing();
 					searcherController.stopSearcher();
+					trackerController.stopTracker();
 				}
 			}));
 		}

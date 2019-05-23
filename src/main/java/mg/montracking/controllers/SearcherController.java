@@ -29,7 +29,7 @@ public class SearcherController {
 	private static class SearcherControllerHolder {
 		private static final SearcherController INSTANCE = new SearcherController();
 	}
-	
+
 	@FXML
 	private Button startSearcherButton, imageProcessingViewButton, searcherTrackerViewButton;
 	@FXML
@@ -54,6 +54,12 @@ public class SearcherController {
 			startSearcherButton.setText("Start searcher");
 			searcherService.stopSearcher();
 		}
+	}
+
+	public void startSearcherViaOverseer() {
+		searcherActive = true;
+		searcherService.startSearcher();
+
 	}
 
 	public void stopSearcher() {
@@ -85,7 +91,7 @@ public class SearcherController {
 	public void showViewSearcherTracker() {
 		screenController.activate("SearcherTracker");
 	}
-	
+
 	@FXML
 	public void showViewOverseer() {
 		screenController.activate("Overseer");

@@ -6,21 +6,28 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.Timer;
 
+import it.unimi.dsi.fastutil.bytes.Byte2BooleanSortedMaps.SynchronizedSortedMap;
 import mg.montracking.controllers.ImageProcessingController;
 import mg.montracking.controllers.SearcherController;
-import mg.montracking.entity.BaseSearcher;
+import mg.montracking.controllers.TrackerController;
 import mg.montracking.entity.Overseer;
+import mg.montracking.entity.Person;
+import mg.montracking.core.utils.RegulationError;
 
 public class OverseerService {
 
 	private SearcherController searcherController = SearcherController.getInstance();
 	private ImageProcessingController imageProcessingController = ImageProcessingController.getInstance();
+	private TrackerController trackerController = TrackerController.getInstance();
+	private Person person = Person.getInstance();
 	private Overseer overseer = Overseer.getInstance();
 
 	private boolean isTimerStoppedAndRestarted = false;
 	private ScheduledExecutorService overseerScheduler;
+	private ScheduledExecutorService calculationScheduler;
 	private int delayTimeForSearcherToLaunchAgain = 1500; // in [ms]
-
+	private int centerOfScreenPositionX = 190, centerOfScreenPositionY = 150;
+	
 	Timer timer = new Timer(delayTimeForSearcherToLaunchAgain, null);
 
 	private Runnable montrackingAlgorithm = () -> {
@@ -31,16 +38,32 @@ public class OverseerService {
 				isTimerStoppedAndRestarted = true;
 			}
 			searcherController.stopSearcher();
-//			trackerController.startTracker();
+			trackerController.startTracker();
 		} else {
 			if (isTimerStoppedAndRestarted) {
 				timer.start();
 				isTimerStoppedAndRestarted = false;
 			}
 			if (!timer.isRunning()) {
-				searcherController.startSearcher();
+				trackerController.stopTracker();
+				searcherController.startSearcherViaOverseer();
 			}
 		}
+	};
+	
+	private Runnable calculateError = () -> {
+		trackerController.setBottomMotorPWM(RegulationError.
+				calculateError(centerOfScreenPositionX, person.getXFaceCoordinates()));
+		trackerController.setUpperMotorPWM(RegulationError.
+				calculateError(centerOfScreenPositionY, person.getYFaceCoordinates()));
+		
+		
+//		System.out.println("srodek dla x: " + centerOfScreenPositionX);
+//		System.out.println("srodek dla y: " + centerOfScreenPositionY);
+//		System.out.println("wspolrzedne twarzy x: " + person.getXFaceCoordinates());
+//		System.out.println("wspolrzedne twarzy y: " + person.getYFaceCoordinates());
+//		System.out.println("uchyb dla X: " + RegulationError.calculateError(centerOfScreenPositionX, person.getXFaceCoordinates()));
+//		System.out.println("uchyb dla y: " + RegulationError.calculateError(centerOfScreenPositionY, person.getYFaceCoordinates()));
 	};
 
 	private OverseerService() {
@@ -62,6 +85,14 @@ public class OverseerService {
 			imageProcessingController.startImageProcessing();
 			this.overseerScheduler = Executors.newSingleThreadScheduledExecutor();
 			this.overseerScheduler.scheduleAtFixedRate(montrackingAlgorithm, 0, 500, TimeUnit.MILLISECONDS);
+			try {
+				TimeUnit.SECONDS.sleep(2);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			this.calculationScheduler = Executors.newSingleThreadScheduledExecutor();
+			this.calculationScheduler.scheduleAtFixedRate(calculateError, 0, 50, TimeUnit.MILLISECONDS);
+			
 		}
 	}
 
@@ -70,6 +101,8 @@ public class OverseerService {
 			try {
 				this.overseerScheduler.shutdown();
 				this.overseerScheduler.awaitTermination(500, TimeUnit.MILLISECONDS);
+				this.calculationScheduler.shutdown();
+				this.calculationScheduler.awaitTermination(500, TimeUnit.MILLISECONDS);
 				overseer.setRunning(false);
 			} catch (InterruptedException e) {
 				System.err.println("Exception in stopping the overseer... " + e);
@@ -77,6 +110,7 @@ public class OverseerService {
 		}
 		searcherController.stopSearcher();
 		imageProcessingController.stopImageProcessing();
+		trackerController.stopTracker();
 	}
 
 }
